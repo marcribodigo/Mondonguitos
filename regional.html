@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Regional - España Interactiva</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #10b981;
+            --primary: #3b82f6;
+            --text-muted: #94a3b8;
+            --danger: #ef4444;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: var(--bg); 
+            color: white; 
+            display: flex; 
+            justify-content: center; 
+            padding: 20px; 
+            margin: 0; 
+        }
+
+        .card { 
+            background: var(--card-bg); 
+            padding: 30px; 
+            border-radius: 24px; 
+            width: 100%; 
+            max-width: 1100px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3); 
+        }
+        
+        .header-section { 
+            margin-bottom: 20px; 
+            border-bottom: 1px solid #334155; 
+            padding-bottom: 15px; 
+        }
+
+        h1 { margin: 0; font-size: 24px; font-weight: 800; }
+        
+        .btn-back { 
+            display: none; 
+            background: var(--danger); 
+            color: white; 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            margin-bottom: 20px;
+            transition: all 0.2s;
+        }
+
+        .btn-back:hover { transform: scale(1.05); background: #dc2626; }
+
+        .main-layout { 
+            display: grid; 
+            grid-template-columns: 1fr 350px; 
+            gap: 25px; 
+        }
+
+        .map-wrapper { 
+            position: relative; 
+            height: 550px; 
+            background: #334155; 
+            border-radius: 16px; 
+            overflow: hidden; 
+            border: 1px solid #475569; 
+        }
+        
+        /* Círculos de Regiones (Vista General) */
+        .region-dot { 
+            fill: var(--primary); 
+            fill-opacity: 0.4; 
+            stroke: white; 
+            stroke-width: 2; 
+            cursor: pointer; 
+            transition: 0.3s; 
+        }
+        .region-dot:hover { fill-opacity: 0.7; r: 45; }
+        
+        /* Círculos de Provincias (Vista Detalle) */
+        .sub-province { display: none; }
+        .prov-dot { 
+            fill: var(--accent); 
+            fill-opacity: 0.7; 
+            stroke: white; 
+            stroke-width: 1.5; 
+            cursor: pointer; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .prov-dot:hover { fill-opacity: 1; stroke-width: 3; }
+        .prov-dot.active { 
+            fill: #fff; 
+            stroke: var(--accent); 
+            stroke-width: 5; 
+            filter: drop-shadow(0 0 10px var(--accent));
+        }
+
+        .label { 
+            fill: white; 
+            font-size: 10px; 
+            font-weight: 700; 
+            pointer-events: none; 
+            text-shadow: 1px 1px 2px black; 
+            text-transform: uppercase;
+        }
+
+        /* Panel Lateral de Resumen */
+        .summary-panel { 
+            background: #16213e; 
+            border-radius: 16px; 
+            padding: 25px; 
+            border: 1px solid #475569; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        .summary-header { margin-bottom: 25px; border-bottom: 1px solid #334155; padding-bottom: 10px; }
+        .summary-header h2 { margin: 0; font-size: 22px; color: var(--accent); }
+        
+        .stat-box { margin-bottom: 18px; }
+        .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 4px; }
+        .stat-value { font-size: 19px; font-weight: 700; color: white; }
+
+        .kpi-meter { 
+            background: #334155; 
+            padding: 20px; 
+            border-radius: 12px; 
+            text-align: center; 
+            margin-top: auto;
+            border: 1px solid #475569;
+        }
+        .kpi-percent { font-size: 28px; font-weight: 800; color: var(--primary); display: block; }
+
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .map-wrapper { height: 400px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="header-section">
+            <h1>Análisis Geográfico de Ventas</h1>
+            <p style="color: var(--text-muted); margin: 5px 0 0 0;">Haz clic en una región para ver provincias. Tamaño del círculo = Volumen de ventas.</p>
+        </div>
+        
+        <button class="btn-back" id="btnBack" onclick="resetMap()">← Volver a España</button>
+
+        <div class="main-layout">
+            <div class="map-wrapper">
+                <svg viewBox="0 0 800 600" width="100%" height="100%">
+                    <path d="M150,150 L250,80 L550,80 L700,200 L750,400 L600,550 L250,550 L100,450 Z" fill="#475569" />
+                    
+                    <g id="group-catalunya" class="region-group">
+                        <circle class="region-dot" cx="650" cy="180" r="40" onclick="showRegion('catalunya')" />
+                        <text x="615" y="130" class="label">Cataluña</text>
+                        <g class="sub-province">
+                            <circle class="prov-dot" cx="640" cy="210" r="38" onclick="selectProv(this, 'Barcelona', '8.450.200€', '1.240', '15.2M€', 94)" />
+                            <text x="635" y="265" class="label">Barcelona</text>
+                            
+                            <circle class="prov-dot" cx="690" cy="150" r="18" onclick="selectProv(this, 'Girona', '1.120.000€', '215', '2.5M€', 82)" />
+                            <text x="695" y="135" class="label">Girona</text>
+                            
+                            <circle class="prov-dot" cx="590" cy="175" r="14" onclick="selectProv(this, 'Lleida', '890.000€', '105', '1.8M€', 76)" />
+                            <text x="560" y="170" class="label">Lleida</text>
+                        </g>
+                    </g>
+
+                    <g id="group-andalucia" class="region-group">
+                        <circle class="region-dot" cx="250" cy="480" r="45" onclick="showRegion('andalucia')" />
+                        <text x="215" y="545" class="label">Andalucía</text>
+                        <g class="sub-province">
+                            <circle class="prov-dot" cx="240" cy="470" r="34" onclick="selectProv(this, 'Sevilla', '4.200.000€', '680', '6.1M€', 98)" />
+                            <text x="220" y="520" class="label">Sevilla</text>
+                            
+                            <circle class="prov-dot" cx="320" cy="515" r="28" onclick="selectProv(this, 'Málaga', '3.150.000€', '490', '4.5M€', 105)" />
+                            <text x="310" y="560" class="label">Málaga</text>
+                            
+                            <circle class="prov-dot" cx="420" cy="490" r="16" onclick="selectProv(this, 'Granada', '1.200.000€', '180', '2.8M€', 88)" />
+                            <text x="415" y="525" class="label">Granada</text>
+                        </g>
+                    </g>
+
+                    <g id="group-valencia" class="region-group">
+                        <circle class="region-dot" cx="600" cy="350" r="38" onclick="showRegion('valencia')" />
+                        <text x="560" y="410" class="label">C. Valenciana</text>
+                        <g class="sub-province">
+                            <circle class="prov-dot" cx="610" cy="360" r="30" onclick="selectProv(this, 'Valencia', '5.100.000€', '812', '7.4M€', 92)" />
+                            <text x="625" y="405" class="label">Valencia</text>
+                            
+                            <circle class="prov-dot" cx="585" cy="420" r="22" onclick="selectProv(this, 'Alicante', '2.900.000€', '445', '4.8M€', 86)" />
+                            <text x="595" y="455" class="label">Alicante</text>
+                            
+                            <circle class="prov-dot" cx="595" cy="305" r="14" onclick="selectProv(this, 'Castellón', '1.050.000€', '135', '2.1M€', 74)" />
+                            <text x="610" y="305" class="label">Castellón</text>
+                        </g>
+                    </g>
+                </svg>
+            </div>
+
+            <div class="summary-panel" id="summaryPanel">
+                <div class="summary-header">
+                    <h2 id="det-name">Provincia</h2>
+                    <p id="det-region" style="font-size: 12px; color: var(--text-muted); margin: 0;">Selecciona un círculo verde</p>
+                </div>
+                
+                <div class="stat-box">
+                    <span class="stat-label">Ventas Acumuladas</span>
+                    <span class="stat-value" id="det-sales">-</span>
+                </div>
+                
+                <div class="stat-box">
+                    <span class="stat-label">Clientes Activos</span>
+                    <span class="stat-value" id="det-clients">-</span>
+                </div>
+                
+                <div class="stat-box">
+                    <span class="stat-label">Potencial Estimado</span>
+                    <span class="stat-value" id="det-potential">-</span>
+                </div>
+
+                <div class="kpi-meter">
+                    <span class="stat-label" style="color: white; margin-bottom: 10px;">KPI cumplimiento</span>
+                    <span class="kpi-percent" id="det-kpi">0%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Función para actualizar el resumen al hacer clic en una provincia
+        function selectProv(element, nombre, ventas, clientes, potencial, kpi) {
+            // Manejo de clase activa para feedback visual
+            document.querySelectorAll('.prov-dot').forEach(d => d.classList.remove('active'));
+            element.classList.add('active');
+
+            // Actualizar textos
+            document.getElementById('det-name').innerText = nombre;
+            document.getElementById('det-sales').innerText = ventas;
+            document.getElementById('det-clients').innerText = clientes;
+            document.getElementById('det-potential').innerText = potencial;
+            document.getElementById('det-kpi').innerText = kpi + "%";
+            
+            // Color del KPI según rendimiento
+            document.getElementById('det-kpi').style.color = kpi >= 100 ? '#10b981' : '#3b82f6';
+        }
+
+        // Entrar en una Comunidad Autónoma
+        function showRegion(regionId) {
+            document.querySelectorAll('.region-group').forEach(g => g.style.display = 'none');
+            const selected = document.getElementById('group-' + regionId);
+            selected.style.display = 'block';
+            
+            // Ocultar círculos generales
+            selected.querySelector('.region-dot').style.display = 'none';
+            selected.querySelector('.label').style.display = 'none';
+            
+            // Mostrar provincias
+            selected.querySelectorAll('.sub-province').forEach(d => d.style.display = 'block');
+            
+            // Mostrar botón "Volver" (que empuja hacia abajo)
+            document.getElementById('btnBack').style.display = 'inline-block';
+            document.getElementById('det-region').innerText = "Región: " + regionId.toUpperCase();
+            document.getElementById('det-name').innerText = "Selecciona Provincia";
+        }
+
+        // Volver al mapa de España
+        function resetMap() {
+            document.querySelectorAll('.region-group').forEach(g => {
+                g.style.display = 'block';
+                g.querySelector('.region-dot').style.display = 'block';
+                g.querySelector('.label').style.display = 'block';
+            });
+            
+            document.querySelectorAll('.sub-province').forEach(d => d.style.display = 'none');
+            document.querySelectorAll('.prov-dot').forEach(d => d.classList.remove('active'));
+            
+            document.getElementById('btnBack').style.display = 'none';
+            document.getElementById('det-name').innerText = "Provincia";
+            document.getElementById('det-region').innerText = "Selecciona un círculo verde";
+            document.getElementById('det-sales').innerText = "-";
+            document.getElementById('det-clients').innerText = "-";
+            document.getElementById('det-potential').innerText = "-";
+            document.getElementById('det-kpi').innerText = "0%";
+            document.getElementById('det-kpi').style.color = 'var(--primary)';
+        }
+    </script>
+</body>
+</html>
