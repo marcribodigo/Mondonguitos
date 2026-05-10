@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Intelligence Dashboard</title>
+    <link rel="stylesheet" href="Styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <span>Analytics Pro</span>
+            </div>
+           <nav>
+    <ul>
+        <li>
+            <a href="index.html">Resumen General</a>
+        </li>
+        <li>
+            <a href="ventas.html">Ventas Generales</a>
+        </li>
+        <li>
+            <a href="regional.html">Mapa Regional</a>
+        </li>                    
+        <li>
+            <a href="campanas.html" id=campanas> Campañas Activas </a>
+        </li>
+    </ul>
+</nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <h1>Panel de Control de Ventas</h1>
+                <div class="user-info">
+                    <span>HACKATON 2025 </span>
+                </div>
+            </header>
+
+            <section class="kpi-grid">
+                <div class="card kpi-card">
+                    <span class="label">Ventas Totales</span>
+                    <div class="value">109.4M €</div>
+                    <div class="trend up">+12.5% vs prev.</div>
+                </div>
+                <div class="card kpi-card">
+                    <span class="label">Ticket Medio</span>
+                    <div class="value">673.24 €</div>
+                    <div class="trend up">+4.2%</div>
+                </div>
+                <div class="card kpi-card">
+                    <span class="label">Clientes Activos</span>
+                    <div class="value">10,994</div>
+                    <div class="trend">Estable</div>
+                </div>
+                <div class="card kpi-card">
+                    <span class="label">Potencial Total</span>
+                    <div class="value">215.8M €</div>
+                    <div class="progress-bar"><div class="fill" style="width: 51%"></div></div>
+                </div>
+            </section>
+
+            <section class="charts-grid">
+                <div class="card chart-container">
+                    <h3>Ventas por Categoría</h3>
+                    <div class="bar-chart">
+                        <div class="bar-row">
+                            <span>Cat. T1</span>
+                            <div class="bar-bg"><div class="bar-fill blue" style="width: 60%;"></div></div>
+                            <span class="val">65.4M</span>
+                        </div>
+                        <div class="bar-row">
+                            <span>Cat. C1</span>
+                            <div class="bar-bg"><div class="bar-fill cyan" style="width: 31%;"></div></div>
+                            <span class="val">33.6M</span>
+                        </div>
+                        <div class="bar-row">
+                            <span>Cat. C2</span>
+                            <div class="bar-bg"><div class="bar-fill purple" style="width: 9%;"></div></div>
+                            <span class="val">10.3M</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Top Provincias (Facturación)</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Provincia</th>
+                                <th>Ventas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Madrid</td><td><strong>20.2M €</strong></td></tr>
+                            <tr><td>Barcelona</td><td><strong>12.0M €</strong></td></tr>
+                            <tr><td>Valencia</td><td><strong>5.4M €</strong></td></tr>
+                            <tr><td>Sevilla</td><td><strong>4.5M €</strong></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
